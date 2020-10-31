@@ -1,9 +1,10 @@
 
-let ctx, grid = 80, images = {}, cars, curCar, touchable = false, board=[]
+let ctx, grid = 80, images = {}, cars, curCar, touchable = false, board=[], curMove
 let touchX, touchY
 
 function init(c, boardW, boardH, exitX, exitY) {
 	cars = c
+	curMove = 0
 	updateBoard()
 	ctx = canvas.getContext("2d")
 	loadImages(['blue', 'white', 'yellow', 'black', 'train', 'board'], () => {
@@ -85,11 +86,15 @@ function touchmove(ex, ey) {
 			if(y > touchY) {
 				if(board[curCar[0]][curCar[1] + curCar[2][1]] == 0) {
 					curCar[1]++
+					curMove++
+					moveNumber.innerHTML = curMove;
 					updateBoard()
 				}
 			} else if(y < touchY){
 				if(board[curCar[0]][curCar[1] - 1] == 0) {
 					curCar[1]--
+					curMove++
+					moveNumber.innerHTML = curMove;
 					updateBoard()
 				}
 			}
@@ -98,11 +103,15 @@ function touchmove(ex, ey) {
 			if(x > touchX) {
 				if(board[curCar[0] + curCar[2][0]][curCar[1]] == 0) {
 					curCar[0]++
+					curMove++
+					moveNumber.innerHTML = curMove;
 					updateBoard()
 				}
 			} else if(x < touchX) {
 				if(board[curCar[0] - 1][curCar[1]] == 0) {
 					curCar[0]--
+					curMove++
+					moveNumber.innerHTML = curMove;
 					updateBoard()
 				}
 			}
@@ -132,8 +141,9 @@ async function solve() {
 		winMoves.unshift(pc[2])
 		pc = pc[3]
 	}
-	for(let cars2 of winMoves) {
+	for(let [index, cars2] of winMoves.entries()) {
 		drawAll(cars2)
+		moveNumber.innerHTML = index + 1
 		await sleep(500)
 	}
 }
@@ -256,7 +266,7 @@ function loadImages(sources, callback){
 					}
 			};
 
-			images[src].src = 'res/' + src + '.jpg'
+			images[src].src = 'res/' + src + '.png'
 	}
 }
 
