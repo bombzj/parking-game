@@ -5,19 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui">
 <meta name="keywords" content="Math,24,Game"/>
 <title>Parking Game</title>
-<script src="levels.js?i=1"></script>
-<script src="car.js?i=1"></script>
+<script src="levels.js?i=2"></script>
+<script src="car.js?i=2"></script>
 <style>
     body, button, span {
         font-size: 32px
     }
 </style>
 </head>
-<body style="margin:0px">
-    <canvas id="canvas" width="700" height="700" style="margin:0px;float:left"></canvas>
+<body style="margin:0px" onselectstart="return false;">
+    <canvas id="canvas" width="700" height="700" style="margin:0px;float:left" onselectstart="return false;"></canvas>
     <button onclick="javascript:solve()" style="padding:10px;">solve</button><br/>
     <button onclick="javascript:next()" style="padding:10px;">next</button><br/>
     <button onclick="javascript:previous()" style="padding:10px;">previous</button><br/>
+    <button onclick="javascript:restart()" style="padding:10px;">restart</button><br/>
     <br/>
     Level <span id="level"></span><br/>
     <br/>
@@ -27,7 +28,7 @@
 <script>
     let curLevel = 0
 
-    init(levels[curLevel], 6, 6, 7, 3)
+    restart()
     level.innerHTML = curLevel + 1
     moveNumber.innerHTML = '0'
     
@@ -35,15 +36,18 @@
         if(curLevel < levels.length - 1) {
             curLevel++
             level.innerHTML = curLevel + 1
-            init(levels[curLevel], 6, 6, 7, 3)
+            restart()
         }
     }
     function previous() {
         if(curLevel > 0) {
             curLevel--
             level.innerHTML = curLevel + 1
-            init(levels[curLevel], 6, 6, 7, 3)
+            restart()
         }
+    }
+    function restart() {
+        init(levels[curLevel], 6, 6, 7, 3)
     }
 
 </script>

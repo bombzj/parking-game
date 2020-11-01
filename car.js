@@ -3,8 +3,9 @@ let ctx, grid = 80, images = {}, cars, curCar, touchable = false, board=[], curM
 let touchX, touchY
 
 function init(c, boardW, boardH, exitX, exitY) {
-	cars = c
+	cars = copyCars(c)
 	curMove = 0
+	moveNumber.innerHTML = curMove
 	updateBoard()
 	ctx = canvas.getContext("2d")
 	loadImages(['blue', 'white', 'yellow', 'black', 'train', 'board'], () => {
@@ -22,7 +23,7 @@ function init(c, boardW, boardH, exitX, exitY) {
 			touchmove(event.offsetX, event.offsetY)
 		}
 	}, false);
-	canvas.addEventListener("mouseup", function (event) {
+	window.addEventListener("mouseup", function (event) {
 		if(!touchable) {
 			touchend()
 		}
@@ -37,7 +38,7 @@ function init(c, boardW, boardH, exitX, exitY) {
 		event.preventDefault(); 
 		touchmove(event.touches[0].clientX, event.touches[0].clientY)
 	}, false);
-	canvas.addEventListener("touchend", function (event) {
+	window.addEventListener("touchend", function (event) {
 		event.preventDefault(); 
 		touchend()
 	}, false);
@@ -86,15 +87,17 @@ function touchmove(ex, ey) {
 			if(y > touchY) {
 				if(board[curCar[0]][curCar[1] + curCar[2][1]] == 0) {
 					curCar[1]++
+					drawAll(cars)
 					curMove++
-					moveNumber.innerHTML = curMove;
+					moveNumber.innerHTML = curMove
 					updateBoard()
 				}
 			} else if(y < touchY){
 				if(board[curCar[0]][curCar[1] - 1] == 0) {
 					curCar[1]--
+					drawAll(cars)
 					curMove++
-					moveNumber.innerHTML = curMove;
+					moveNumber.innerHTML = curMove
 					updateBoard()
 				}
 			}
@@ -103,23 +106,23 @@ function touchmove(ex, ey) {
 			if(x > touchX) {
 				if(board[curCar[0] + curCar[2][0]][curCar[1]] == 0) {
 					curCar[0]++
+					drawAll(cars)
 					curMove++
-					moveNumber.innerHTML = curMove;
+					moveNumber.innerHTML = curMove
 					updateBoard()
 				}
 			} else if(x < touchX) {
 				if(board[curCar[0] - 1][curCar[1]] == 0) {
 					curCar[0]--
+					drawAll(cars)
 					curMove++
-					moveNumber.innerHTML = curMove;
+					moveNumber.innerHTML = curMove
 					updateBoard()
 				}
 			}
 			touchX = x
 		}
 	}
-	
-	drawAll(cars)
 }
 
 function touchend() {
