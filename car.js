@@ -1,6 +1,6 @@
 
-let ctx, grid = 80, images = {}, cars, curCar, touchable = false, board=[], curMove
-let touchX, touchY
+let ctx, grid = 80, images = {}, cars, curCar, touchable = false, board=[], curMove, editMode = false
+let touchX, touchY, backupCars = []
 
 function init(c, boardW, boardH, exitX, exitY) {
 	cars = copyCars(c)
@@ -10,7 +10,6 @@ function init(c, boardW, boardH, exitX, exitY) {
 	ctx = canvas.getContext("2d")
 	loadImages(['blue', 'white', 'yellow', 'black', 'train', 'board'], () => {
 		drawAll(cars)
-		drawBackup()
 	});
 
 	
@@ -33,11 +32,13 @@ function init(c, boardW, boardH, exitX, exitY) {
 	canvas.addEventListener("touchstart", function (event) {
 		touchable = true
 		event.preventDefault(); 
-		touchstart(event.touches[0].clientX, event.touches[0].clientY)
+		var bcr = event.target.getBoundingClientRect();
+		touchstart(event.touches[0].clientX - bcr.x, event.touches[0].clientY - bcr.y)
 	}, false);
 	canvas.addEventListener("touchmove", function (event) {
 		event.preventDefault(); 
-		touchmove(event.touches[0].clientX, event.touches[0].clientY)
+		var bcr = event.target.getBoundingClientRect();
+		touchmove(event.touches[0].clientX - bcr.x, event.touches[0].clientY - bcr.y)
 	}, false);
 	window.addEventListener("touchend", function (event) {
 		event.preventDefault(); 
@@ -45,27 +46,55 @@ function init(c, boardW, boardH, exitX, exitY) {
 	}, false);
 }
 
+function restart() {
+	init(levels[curLevel], 6, 6, 7, 3)
+}
+
+// toggle edit mode
+function edit() {
+	editMode = !editMode;
+	if(editMode) {
+		drawBackup()
+	} else {
+		ctx.clearRect(630,0,150,650); 
+	}
+}
+
 function drawAll(cars) {
 	ctx.clearRect(0,0,650,650); 
-	draw('board', 0.33, 0.33, 7.4, 7.4)
+	draw('board', grid * 0.33, grid * 0.33, grid * 7.4, grid * 7.4)
 	for(let car of cars) {
-		draw(car[2][2], car[0], car[1], car[2][0], car[2][1])
+		draw(car[2][2], grid * car[0], grid * car[1], grid * car[2][0], grid * car[2][1])
 	}
 }
 
 function drawBackup() {
+	let startY = 0.5;
 	for(let [index, car] of carType.entries()) {
-		draw(car[2], 8.0, index / 2 + 0.5, car[0]/2, car[1]/2)
+		draw(car[2], grid * 8.0, grid * startY, grid * car[0]/2, grid * car[1]/2)
+		backupCars.push([8.0, startY, car[0]/2, car[1]/2, car])
+		startY += car[1]/2
 	}
 }
 
 
 function draw(file, x, y, w, h) {
-	ctx.drawImage(images[file], grid * x, grid * y, grid * w, grid * h)
+	ctx.drawImage(images[file], x, y, w, h)
 }
 
 
 function touchstart(ex, ey) {
+	if(editMode) {
+		let x = ex / grid
+		let y = ey / grid
+		for(let [index, car] of backupCars.entries()) {
+			if(x >= car[0] && x < car[2] + car[0] &&
+				y >= car[1] && y < car[3] + car[1]) {
+				curCar = [-1, -1, car[4]]
+				return;
+			}
+		}
+	}
 	let x = Math.floor(ex / grid)
 	let y = Math.floor(ey / grid)
 	touchX = x
@@ -86,54 +115,98 @@ function touchstart(ex, ey) {
 }
 
 function touchmove(ex, ey) {
-	if(curCar) {
-		let x = Math.floor(ex / grid)
-		let y = Math.floor(ey / grid)
-
-		if(curCar[2][0] == 1) {	// vertical
-			if(y > touchY) {
-				if(board[curCar[0]][curCar[1] + curCar[2][1]] == 0) {
-					curCar[1]++
-					drawAll(cars)
-					curMove++
-					moveNumber.innerHTML = curMove
-					updateBoard()
+	let x = Math.floor(ex / grid)
+	let y = Math.floor(ey / grid)
+	if(editMode) {
+		if(curCar) {
+			if(x > 1 && x <= 6 && y > 1 && y <= 6) {
+				let board = updateBoardBase(cars, curCar);
+				let vacant = true
+				if(curCar[2][0] == 1) {	// vertical
+					for(let i = 0;i < curCar[2][1];i++) {
+						if(board[x][y + i] != 0) {
+							vacant = false
+							break;
+						}
+					}
+				} else {
+					for(let i = 0;i < curCar[2][0];i++) {
+						if(board[x + i][y] != 0) {
+							vacant = false
+							break;
+						}
+					}
 				}
-			} else if(y < touchY){
-				if(board[curCar[0]][curCar[1] - 1] == 0) {
-					curCar[1]--
-					drawAll(cars)
-					curMove++
-					moveNumber.innerHTML = curMove
-					updateBoard()
+				if(vacant) {
+					curCar[0] = x
+					curCar[1] = y
+				} else {
+					curCar[0] = -1
 				}
+			} else {
+				curCar[0] = -1
 			}
-			touchY = y;
-		} else {
-			if(x > touchX) {
-				if(board[curCar[0] + curCar[2][0]][curCar[1]] == 0) {
-					curCar[0]++
-					drawAll(cars)
-					curMove++
-					moveNumber.innerHTML = curMove
-					updateBoard()
-				}
-			} else if(x < touchX) {
-				if(board[curCar[0] - 1][curCar[1]] == 0) {
-					curCar[0]--
-					drawAll(cars)
-					curMove++
-					moveNumber.innerHTML = curMove
-					updateBoard()
-				}
+			if(curCar[0] == -1) {
+				ctx.clearRect(0,0,canvas.width,canvas.height); 
+				drawAll(cars)
+				drawBackup()
+				draw(curCar[2][2], ex-grid * curCar[2][0]/4, ey-grid * curCar[2][1]/4, grid * curCar[2][0]/2, grid * curCar[2][1]/2)
+			} else {
+				drawAll();
 			}
-			touchX = x
+		}
+	} else {
+		if(curCar) {
+			if(curCar[2][0] == 1) {	// vertical
+				if(y > touchY) {
+					if(board[curCar[0]][curCar[1] + curCar[2][1]] == 0) {
+						curCar[1]++
+						drawAll(cars)
+						curMove++
+						moveNumber.innerHTML = curMove
+						updateBoard()
+					}
+				} else if(y < touchY){
+					if(board[curCar[0]][curCar[1] - 1] == 0) {
+						curCar[1]--
+						drawAll(cars)
+						curMove++
+						moveNumber.innerHTML = curMove
+						updateBoard()
+					}
+				}
+				touchY = y;
+			} else {
+				if(x > touchX) {
+					if(board[curCar[0] + curCar[2][0]][curCar[1]] == 0) {
+						curCar[0]++
+						drawAll(cars)
+						curMove++
+						moveNumber.innerHTML = curMove
+						updateBoard()
+					}
+				} else if(x < touchX) {
+					if(board[curCar[0] - 1][curCar[1]] == 0) {
+						curCar[0]--
+						drawAll(cars)
+						curMove++
+						moveNumber.innerHTML = curMove
+						updateBoard()
+					}
+				}
+				touchX = x
+			}
 		}
 	}
 }
 
 function touchend() {
 	curCar = undefined
+	if(editMode) {
+		ctx.clearRect(0,0,canvas.width,canvas.height); 
+		drawAll(cars)
+		drawBackup()
+	}
 }
 
 // update board occupied
@@ -218,7 +291,7 @@ function isNewMove(cars) {
 	return true;
 }
 
-function updateBoardBase(cars) {
+function updateBoardBase(cars, excludeCar) {
 	let board = [
 		[1,1,1,1,1,1,1,1,1],
 		[1,0,0,0,0,0,0,1,1],
@@ -231,6 +304,9 @@ function updateBoardBase(cars) {
 		[1,1,1,1,1,1,1,1,1],
 	]
 	for(let car of cars) {
+		if(car == excludeCar) {
+			continue;
+		}
 		if(car[2][0] == 1) {	// vertical
 			for(let y = 0;y < car[2][1];y++) {
 				board[car[0]][car[1] + y] = 1
