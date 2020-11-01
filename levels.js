@@ -3,6 +3,7 @@ const white =   [1, 2, 'white'];
 const yellow =  [2, 1, 'yellow'];
 const black =   [3, 1, 'black'];
 const train =   [1, 3, 'train'];
+const carType = [blue, white, black, train, yellow]
 
 const levels = [
     [

@@ -10,6 +10,7 @@ function init(c, boardW, boardH, exitX, exitY) {
 	ctx = canvas.getContext("2d")
 	loadImages(['blue', 'white', 'yellow', 'black', 'train', 'board'], () => {
 		drawAll(cars)
+		drawBackup()
 	});
 
 	
@@ -45,10 +46,16 @@ function init(c, boardW, boardH, exitX, exitY) {
 }
 
 function drawAll(cars) {
-	ctx.clearRect(0,0,canvas.width,canvas.height); 
+	ctx.clearRect(0,0,650,650); 
 	draw('board', 0.33, 0.33, 7.4, 7.4)
 	for(let car of cars) {
 		draw(car[2][2], car[0], car[1], car[2][0], car[2][1])
+	}
+}
+
+function drawBackup() {
+	for(let [index, car] of carType.entries()) {
+		draw(car[2], 8.0, index / 2 + 0.5, car[0]/2, car[1]/2)
 	}
 }
 
