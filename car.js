@@ -71,7 +71,7 @@ function drawAll(c) {
 	}
 	ctx.clearRect(0,0,650,650); 
 	draw('board', grid * 0.33, grid * 0.33, grid * 7.4, grid * 7.4)
-	for(let car of cars) {
+	for(let car of c) {
 		draw(car[2][2], grid * car[0], grid * car[1], grid * car[2][0], grid * car[2][1])
 	}
 }
