@@ -62,7 +62,9 @@ function edit() {
 function empty() {
 	cars = []
 	drawAll()
-	drawBackup()
+	if(editMode) {
+		drawBackup()
+	}
 }
 
 function drawAll(c) {

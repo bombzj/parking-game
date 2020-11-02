@@ -3,30 +3,49 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui, maximum-scale=1.0, user-scalable=0">
-<meta name="keywords" content="Math,24,Game"/>
+<meta name="keywords" content="Parking,Game"/>
 <title>Parking Game</title>
 <script src="levels.js?i=3"></script>
 <script src="car.js?i=3"></script>
 <style>
     body, button, span {
-        font-size: 32px
+        font-size: 32px;
+        touch-action: manipulation;
+    }
+    body,html {
+        position: fixed;
+    }
+    td {
+        padding-top:10px;
     }
 </style>
 </head>
 <body onselectstart="return false;">
     <canvas id="canvas" width="800" height="700" style="margin:0px;float:left" onselectstart="return false;"></canvas>
-    <button onclick="javascript:solve()" style="padding:10px;">solve</button><br/>
-    <button onclick="javascript:previous()" style="padding:10px;">&lt;&lt;&lt;</button>
-    <button onclick="javascript:next()" style="padding:10px;">&gt;&gt;&gt;</button>
-    <br/>
-    <button onclick="javascript:restart()" style="padding:10px;">restart</button><br/>
-    <br/>
-    Level <span id="level"></span><br/>
-    <br/>
-    Move <span id="moveNumber"></span><br/>
-    <br/>
-    <button onclick="javascript:edit()" style="padding:10px;">edit</button><br/>
-    <button onclick="javascript:empty()" style="padding:10px;">empty</button><br/>
+    <table>
+        <tr><td>
+            <button onclick="javascript:solve()" style="padding:10px;">solve</button>
+        </td></tr>
+        <tr><td>
+            Level <span id="level"></span><br/>
+        </td></tr>
+        <tr><td>
+            <button onclick="javascript:previous()" style="padding:10px;">&lt;&lt;&lt;</button>
+            <button onclick="javascript:next()" style="padding:10px;">&gt;&gt;&gt;</button>
+        </td></tr>
+        <tr><td>
+            <button onclick="javascript:restart()" style="padding:10px;">restart</button>
+        </td></tr>
+        <tr><td>
+            Move <span id="moveNumber"></span><br/>
+        </td></tr>
+        <tr><td>
+            <button onclick="javascript:edit()" style="padding:10px;">edit</button><br/>
+        </td></tr>
+        <tr><td>
+            <button onclick="javascript:empty()" style="padding:10px;">empty</button><br/>
+        </td></tr>
+    </table>
 </body>
 <script>
     let curLevel = 0
