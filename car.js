@@ -1,5 +1,5 @@
 
-let ctx, grid = 80, images = {}, cars, curCar, touchable = false, board=[], curMove, editMode = false
+let ctx, grid = 80, images = {}, cars, curCar, touchable = false, board=[], curMove, editMode = false, solving = false
 let touchX, touchY, backupCars = []
 
 function init(c, boardW, boardH, exitX, exitY) {
@@ -241,6 +241,10 @@ function updateBoard() {
 
 let historyMoves, win, winMoves
 async function solve() {
+	if(solving) {
+		solving = false;
+		return;
+	}
 	historyMoves = {}
 	win = false
 	winMoves = []
@@ -252,11 +256,17 @@ async function solve() {
 		winMoves.unshift(pc[2])
 		pc = pc[3]
 	}
+	solving = true
 	for(let [index, cars2] of winMoves.entries()) {
-		drawAll(cars2)
+		if(!solving) {
+			return;
+		}
+		cars = cars2
+		drawAll()
 		moveNumber.innerHTML = index + 1
 		await sleep(500)
 	}
+	solving = false
 }
 
 function tryAllMoves(carsInit, level) {
