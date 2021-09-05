@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html onselectstart="return false;">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimal-ui, maximum-scale=1.0, user-scalable=0">
@@ -7,13 +7,15 @@
 <title>Parking Game</title>
 <script src="levels.js?i=1"></script>
 <script src="car.js?i=1"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js"></script>
+<script src="clipboard.min.js"></script>
 <style>
     body, button, span {
         font-size: 32px;
         touch-action: manipulation;
     }
     body,html {
+        -webkit-user-select: none;
+        user-select: none;
         position: fixed;
     }
     td {
@@ -21,8 +23,8 @@
     }
 </style>
 </head>
-<body onselectstart="return false;">
-    <canvas id="canvas" width="800" height="700" style="margin:0px;float:left" onselectstart="return false;"></canvas>
+<body>
+    <canvas id="canvas" width="800" height="700" style="margin:0px;float:left"></canvas>
     <table id="tbl">
         <tr><td>
             <button onclick="javascript:solve()" style="padding:10px;">solve</button>
